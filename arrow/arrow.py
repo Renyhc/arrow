@@ -1729,16 +1729,10 @@ class Arrow:
             return self.fromdatetime(self._datetime - other, self._datetime.tzinfo)
 
         elif isinstance(other, dt_datetime):
-            delta = self._datetime - other
-            if self._datetime.tzinfo != other.tzinfo:
-                delta -= timedelta(seconds=(self._datetime.utcoffset().total_seconds() - other.utcoffset().total_seconds()))
-            return delta
+            return self._datetime - other
 
         elif isinstance(other, Arrow):
-            delta = self._datetime - other._datetime
-            if self._datetime.tzinfo != other._datetime.tzinfo:
-                delta -= timedelta(seconds=(self._datetime.utcoffset().total_seconds() - other._datetime.utcoffset().total_seconds()))
-            return delta
+            return self._datetime - other._datetime
 
         return NotImplemented
 
