@@ -1729,10 +1729,16 @@ class Arrow:
             return self.fromdatetime(self._datetime - other, self._datetime.tzinfo)
 
         elif isinstance(other, dt_datetime):
-            return self._datetime - other
+            # Convert timestamps to UTC before subtraction to handle DST transitions correctly
+            utc_self = self._datetime.astimezone(dateutil_tz.UTC)
+            utc_other = other.astimezone(dateutil_tz.UTC)
+            return utc_self - utc_other
 
         elif isinstance(other, Arrow):
-            return self._datetime - other._datetime
+            # Convert timestamps to UTC before subtraction to handle DST transitions correctly
+            utc_self = self._datetime.astimezone(dateutil_tz.UTC)
+            utc_other = other._datetime.astimezone(dateutil_tz.UTC)
+            return utc_self - utc_other
 
         return NotImplemented
 
