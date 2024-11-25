@@ -1726,13 +1726,19 @@ class Arrow:
 
     def __sub__(self, other: Any) -> Union[timedelta, "Arrow"]:
         if isinstance(other, (timedelta, relativedelta)):
-            return self.fromdatetime(self._datetime - other, self._datetime.tzinfo)
+            return self.fromdatetime(self._datetime - other)
 
         elif isinstance(other, dt_datetime):
-            return self._datetime - other
+            # Convert both datetimes to UTC before calculating the difference
+            self_utc = self._datetime.astimezone(dateutil_tz.UTC)
+            other_utc = other.astimezone(dateutil_tz.UTC)
+            return self_utc - other_utc
 
         elif isinstance(other, Arrow):
-            return self._datetime - other._datetime
+            # Convert both Arrow objects to UTC before calculating the difference
+            self_utc = self._datetime.astimezone(dateutil_tz.UTC)
+            other_utc = other._datetime.astimezone(dateutil_tz.UTC)
+            return self_utc - other_utc
 
         return NotImplemented
 

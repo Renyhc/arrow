@@ -86,6 +86,7 @@ ipython_config.py
 
 # pyenv
 .python-version
+source/
 
 # celery beat schedule file
 celerybeat-schedule
@@ -209,3 +210,4 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+.aider*
