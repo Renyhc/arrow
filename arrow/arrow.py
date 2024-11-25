@@ -1737,7 +1737,7 @@ class Arrow:
         elif isinstance(other, Arrow):
             delta = self._datetime - other._datetime
             if self._datetime.tzinfo != other._datetime.tzinfo:
-                delta += timedelta(seconds=(self._datetime.utcoffset().total_seconds() - other._datetime.utcoffset().total_seconds()))
+                delta -= timedelta(seconds=(self._datetime.utcoffset().total_seconds() - other._datetime.utcoffset().total_seconds()))
             return delta
 
         return NotImplemented
