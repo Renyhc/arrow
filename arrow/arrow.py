@@ -1717,24 +1717,38 @@ class Arrow:
         return self.__add__(other)
 
     @overload
-    def __sub__(self, other: Union[timedelta, relativedelta]) -> "Arrow":
-        pass  # pragma: no cover
+    def __sub__(self, other: timedelta) -> "Arrow":
+        ...
 
     @overload
     def __sub__(self, other: Union[dt_datetime, "Arrow"]) -> timedelta:
-        pass  # pragma: no cover
+        ...
 
     def __sub__(self, other: Any) -> Union[timedelta, "Arrow"]:
-        if isinstance(other, (timedelta, relativedelta)):
-            return self.fromdatetime(self._datetime - other, self._datetime.tzinfo)
+        if isinstance(other, (Arrow, dt_datetime)):
+            if isinstance(other, Arrow):
+                other = other._datetime
 
-        elif isinstance(other, dt_datetime):
+            # Handle DST transitions
+            dt1, dt2 = self._datetime, other
+            if dt1.tzinfo and dt2.tzinfo:
+                # Get UTC offset for both times
+                offset1 = dt1.utcoffset() or timedelta()
+                offset2 = dt2.utcoffset() or timedelta()
+
+                # Convert both times to UTC for comparison
+                dt1_utc = (dt1 - offset1).replace(tzinfo=None)
+                dt2_utc = (dt2 - offset2).replace(tzinfo=None)
+
+                return dt1_utc - dt2_utc
             return self._datetime - other
 
-        elif isinstance(other, Arrow):
-            return self._datetime - other._datetime
-
-        return NotImplemented
+        elif isinstance(other, timedelta):
+            return self.fromdatetime(self._datetime - other)
+        else:
+            raise TypeError(
+                f"Invalid type for comparison: {type(other)}. Only datetime, Arrow, and timedelta objects are supported."
+            )
 
     def __rsub__(self, other: Any) -> timedelta:
         if isinstance(other, dt_datetime):

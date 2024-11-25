@@ -2920,3 +2920,20 @@ class TestArrowUtil:
 
         with pytest.raises(ValueError):
             arrow.Arrow._get_iteration_params(None, None)
+
+    def test_dst_subtraction(self):
+        # Test fall DST transition (November 6, 2022)
+        before = arrow.Arrow(2022, 11, 6, 1, 59, 59, tzinfo="America/Los_Angeles")
+        after = arrow.Arrow(2022, 11, 6, 1, 0, 0, tzinfo="America/Los_Angeles", fold=1)
+
+        # The difference should be 1 second (moving from 1:59:59 PDT to 1:00:00 PST)
+        diff = after - before
+        assert diff.total_seconds() == 1.0
+
+        # Test spring DST transition (March 12, 2023)
+        before = arrow.Arrow(2023, 3, 12, 1, 59, 59, tzinfo="America/Los_Angeles")
+        after = arrow.Arrow(2023, 3, 12, 3, 0, 0, tzinfo="America/Los_Angeles")
+
+        # The difference should be 1 second (moving from 1:59:59 PST to 3:00:00 PDT)
+        diff = after - before
+        assert diff.total_seconds() == 1.0
